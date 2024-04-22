@@ -15,14 +15,6 @@ public class SolutionPrinter(BoolVar[] xs, BoolVar[] ys) : CpSolverSolutionCallb
         {
 			Console.Write("{0} = {1} ", x.ToString(), Value(x));
         }
-
-		Console.Write("  :   ");
-		
-        foreach (BoolVar y in Ys_)
-        {
-			Console.Write("{0} = {1} ", y.ToString(), Value(y));
-        }
-
 		Console.WriteLine();
     }
 
@@ -115,6 +107,7 @@ public class Problem
 			}
 
 			ILiteral[] literals = new ILiteral[lineArgs.Length - 1];
+			string term = "";
 			for (int i = 0; i < lineArgs.Length; i++)
 			{
 				int val = int.Parse(lineArgs[i]);
@@ -125,7 +118,7 @@ public class Problem
 
 				int varIdx = int.Abs(val) - 1;
 				bool isNeg = val < 0;
-				
+
 				if (isNeg)
 				{
 					literals[i] = xs[varIdx].Not();
@@ -134,18 +127,22 @@ public class Problem
 				{
 					literals[i] = xs[varIdx];
 				}
+
+				term += String.Format("{0}{1}{2}", i == 0 ? "" : " || ", isNeg ? "!" : " ", xs[varIdx].ToString());
 			}
 			
-			ys[yCount++] = BoolVarOr(model, literals, $"y_{yCount}");
-			
-			foreach (string arg in lineArgs)
-			{
-				Console.Write($"{arg } ");
-			}
-			Console.WriteLine();
+			BoolVar y = BoolVarOr(model, literals, $"y_{yCount + 1}");
+			ys[yCount++] = y;
+			Console.WriteLine("{0} = {1}", y.ToString(), term);
 		}
-		Console.WriteLine();
-		
+
+		for (int i = 0; i < ys.Length; i++)
+		{
+			string varNameY = ys[i].ToString();
+			Console.Write("{0}{1}", i == 0 ? "" : " && ", varNameY);
+		}
+		Console.WriteLine(" == true\n");
+
 		model.AddBoolAnd(ys);
 		
         CpSolver solver = new();
