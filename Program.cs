@@ -76,9 +76,19 @@ public class Problem
 
 		foreach (string line in lines)
 		{
-			string[] lineArgs = line.Split(' ');
+			string[] lineArgs = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+			if (lineArgs.Length == 0)
+			{
+				continue;
+			}
 
 			if (lineArgs[0] == "c")
+			{
+				continue;
+			}
+			
+			if (lineArgs[0] == "%")
 			{
 				continue;
 			}
@@ -131,9 +141,12 @@ public class Problem
 				term += String.Format("{0}{1}{2}", i == 0 ? "" : " || ", isNeg ? "!" : " ", xs[varIdx].ToString());
 			}
 			
-			BoolVar y = BoolVarOr(model, literals, $"y_{yCount + 1}");
-			ys[yCount++] = y;
-			Console.WriteLine("{0} = {1}", y.ToString(), term);
+			if (literals.Length > 1)
+			{
+				BoolVar y = BoolVarOr(model, literals, $"y_{yCount + 1}");
+				ys[yCount++] = y;
+				Console.WriteLine("{0} = {1}", y.ToString(), term);
+			}
 		}
 
 		for (int i = 0; i < ys.Length; i++)
