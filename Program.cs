@@ -36,8 +36,10 @@ public class Problem
         BoolVar retval = model.NewBoolVar(name);
 		int length = literals.Count();
 
-        model.Add(LinearExpr.Sum(literals) + 1 <= retval + length);
-        model.Add(length * retval <= LinearExpr.Sum(literals));
+        // model.Add(LinearExpr.Sum(literals) + 1 <= retval + length);
+        // model.Add(length * retval <= LinearExpr.Sum(literals));
+		model.AddBoolAnd(literals).OnlyEnforceIf(retval);
+		model.AddBoolOr(literals.Select(x => x.Not())).OnlyEnforceIf(retval.Not());
 
         return retval;
     }
@@ -52,8 +54,10 @@ public class Problem
         BoolVar retval = model.NewBoolVar(name);
 		int length = literals.Count();
 
-		model.Add(LinearExpr.Sum(literals) <= length * retval);
-		model.Add(retval <= LinearExpr.Sum(literals));
+		// model.Add(LinearExpr.Sum(literals) <= length * retval);
+		// model.Add(retval <= LinearExpr.Sum(literals));
+		model.AddBoolOr(literals).OnlyEnforceIf(retval);
+		model.AddBoolAnd(literals.Select(x => x.Not())).OnlyEnforceIf(retval.Not());
 
         return retval;
     }
