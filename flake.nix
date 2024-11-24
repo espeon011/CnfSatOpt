@@ -15,16 +15,16 @@
     {
       devShells = forEachSupportedSystem ({ pkgs }: {
         default = pkgs.mkShell {
-          packages = with pkgs; [
-            dotnet-sdk_8
-            omnisharp-roslyn
-            mono
-            msbuild
+          packages = [
+            pkgs.dotnetCorePackages.dotnet_9.sdk
+            pkgs.omnisharp-roslyn
+            # pkgs.mono
+            # pkgs.msbuild
           ];
         };
 
         environment.sessionVariables = {
-          DOTNET_ROOT = "${pkgs.dotnet-sdk_8}";
+          DOTNET_ROOT = "${pkgs.dotnetCorePackages.dotnet_9.sdk}";
         };
       });
     };
